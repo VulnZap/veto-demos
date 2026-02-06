@@ -1,0 +1,64 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy
+  cancel-in-progress: true
+
+env:
+  PROJECT_ID: plated-valor-467814-h5
+  REGION: us-central1
+  ZONE: us-central1-a
+  IMAGE: us-central1-docker.pkg.dev/plated-valor-467814-h5/veto/demo:latest
+  VM_NAME: veto-demo
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64
+          tags: ${{ env.IMAGE }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Deploy to VM
+        run: |
+          gcloud compute ssh $VM_NAME \
+            --zone=$ZONE \
+            --project=$PROJECT_ID \
+            --ssh-flag="-o StrictHostKeyChecking=no" \
+            --command="
+              docker login -u oauth2accesstoken -p \$(curl -s 'http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token' -H 'Metadata-Flavor: Google' | python3 -c 'import sys,json; print(json.load(sys.stdin)[\"access_token\"])') us-central1-docker.pkg.dev && \
+              docker pull ${{ env.IMAGE }} && \
+              docker stop veto-demo 2>/dev/null || true && \
+              docker rm veto-demo 2>/dev/null || true && \
+              docker run -d --name veto-demo \
+                -p 80:80 -p 443:443 \
+                --shm-size=2g \
+                -v /home/caddy-data:/data/caddy \
+                -e MODEL_PROVIDER_TOKEN=${{ secrets.MODEL_PROVIDER_TOKEN }} \
+                ${{ env.IMAGE }}
+            "
