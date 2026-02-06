@@ -1,0 +1,15 @@
+services:
+  demo:
+    build: .
+    ports:
+      - "80:80"
+      - "443:443"
+    shm_size: "2g"
+    environment:
+      - DISPLAY=:99
+      - DOMAIN=${DOMAIN:-localhost}
+    volumes:
+      - caddy_data:/data
+
+volumes:
+  caddy_data:

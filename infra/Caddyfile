@@ -1,0 +1,25 @@
+{
+	email demo@runveto.com
+	acme_ca https://acme.zerossl.com/v2/DV90
+}
+
+{$DOMAIN:demo.runveto.com} {
+	handle /api/* {
+		reverse_proxy 127.0.0.1:8000
+	}
+
+	handle /ws/* {
+		reverse_proxy 127.0.0.1:8000
+	}
+
+	handle /vnc/* {
+		uri strip_prefix /vnc
+		reverse_proxy 127.0.0.1:6080
+	}
+
+	handle {
+		root * /app/static
+		try_files {path} /index.html
+		file_server
+	}
+}

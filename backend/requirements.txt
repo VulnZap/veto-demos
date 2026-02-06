@@ -1,0 +1,7 @@
+fastapi>=0.110
+uvicorn[standard]>=0.27
+websockets>=12.0
+browser-use>=0.2
+playwright>=1.40
+aiohttp>=3.9
+requests>=2.31
