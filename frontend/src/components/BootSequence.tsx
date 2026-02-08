@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import type { AgentStatus } from "../hooks/useAgentSession";
 import { playSound } from "../lib/sound";
+import { VetoLogo } from "./VetoLogo";
 
 interface BootStep {
   label: string;
@@ -88,9 +89,7 @@ export function BootSequence({ status, connected, error, onReady }: BootSequence
     <div className="min-h-screen flex items-center justify-center p-6">
       <div className="w-full max-w-sm">
         <div className="flex items-center justify-center mb-8">
-          <div className="w-12 h-12 bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-mono text-lg font-bold">V</span>
-          </div>
+          <VetoLogo size={48} />
         </div>
 
         <div className="text-center mb-8">

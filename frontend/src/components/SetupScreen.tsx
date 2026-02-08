@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { VetoLogo } from "./VetoLogo";
 
 const TASKS = [
   {
@@ -82,8 +83,8 @@ export function SetupScreen({ onStart }: SetupScreenProps) {
     <div className="min-h-screen flex items-center justify-center p-6">
       <div className="w-full max-w-lg animate-in">
         <div className="mb-10 text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-primary mb-4">
-            <span className="text-primary-foreground font-mono text-lg font-bold">V</span>
+          <div className="mb-4">
+            <VetoLogo size={48} />
           </div>
           <h1 className="text-section font-medium mb-2">Veto Demo</h1>
           <p className="text-muted-foreground text-sm max-w-sm mx-auto">
