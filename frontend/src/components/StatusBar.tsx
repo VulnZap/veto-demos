@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { AgentStatus } from "../hooks/useAgentSession";
+import { VetoLogo } from "./VetoLogo";
 
 interface StatusBarProps {
   status: AgentStatus | null;
@@ -65,9 +66,7 @@ export function StatusBar({
     <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-card shrink-0">
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-mono text-[10px] font-bold">V</span>
-          </div>
+          <VetoLogo size={24} />
           <span className="text-xs font-medium hidden sm:inline">Veto</span>
         </div>
 
